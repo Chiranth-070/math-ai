@@ -22,145 +22,105 @@ logger = logging.getLogger(__name__)
 st.set_page_config(
     page_title="Mathematics Expert",
     page_icon="∫",
-    layout="wide",
-    initial_sidebar_state="collapsed"  # Collapse sidebar by default
+    layout="wide"
 )
-
-# Hide sidebar
-st.markdown("""
-<style>
-    [data-testid="stSidebar"] {
-        display: none;
-    }
-</style>
-""", unsafe_allow_html=True)
 
 # --- THEME AND LAYOUT CSS ---
 st.markdown("""
 <style>
-    /* === Base Theme and Body === */
-    html, body, [class*="st-"], .main {
-        background-color: #0F1116 !important; /* Dark background */
-        color: #FAFAFA !important; /* Light text */
-    }
-
-    /* Hide Streamlit's default header and footer */
-    .stApp > header, .stApp > footer {
-        display: none !important;
+    /* === Base Theme === */
+    .stApp {
+        background-color: #0F1116 !important;
     }
     
-    /* === Main Layout (Flexbox) === */
-    .main .block-container {
-        padding: 0 !important;
-        max-width: 100% !important;
-        height: 100vh;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between; /* Pushes input to bottom */
-    }
-
-    /* === Scrollable Message Area === */
-    .messages-container {
-        flex-grow: 1; /* Allows container to grow */
-        overflow-y: auto; /* Enables vertical scrolling */
-        padding: 1rem 2rem;
-        width: 100%;
-    }
-
-    /* === Message Bubbles === */
-    .user-message, .bot-response, .error-container, .welcome-container {
-        margin: 1rem 0;
-        padding: 1.2rem;
-        border-radius: 15px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    /* === Chat Message Styling === */
+    .stChatMessage {
+        background-color: #262730 !important;
+        border-radius: 15px !important;
+        margin: 0.5rem 0 !important;
     }
     
-    .user-message *, .bot-response *, .error-container *, .welcome-container * {
-        color: #FAFAFA !important; /* White text for all content inside bubbles */
+    .stChatMessage[data-testid*="user"] {
+        background-color: #1976d2 !important;
     }
     
-    .user-message h3, .bot-response h3, .error-container h3, .welcome-container h3 {
+    .stChatMessage[data-testid*="assistant"] {
+        background-color: #262730 !important;
+        border-left: 4px solid #1f77b4 !important;
+    }
+    
+    /* === Input Area Styling === */
+    .stChatInput {
+        background-color: #262730 !important;
+    }
+    
+    .stChatInput > div > div > div > div {
+        background-color: #262730 !important;
         color: #FAFAFA !important;
     }
     
-    .user-message p, .bot-response p, .error-container p, .welcome-container p {
-        color: #E0E0E0 !important; /* Slightly off-white for paragraphs */
-    }
-
-    .user-message {
-        background-color: #262730;
-        border-left: 4px solid #1976d2;
-        margin-left: 20%;
-    }
-
-    .bot-response {
-        background-color: #262730;
-        border-left: 4px solid #1f77b4;
-        margin-right: 20%;
+    /* === File Uploader in Sidebar === */
+    .stFileUploader {
+        background-color: #262730 !important;
+        border-radius: 10px !important;
+        padding: 1rem !important;
     }
     
-    .error-container {
-        background-color: #422a2a;
-        border-left: 4px solid #ff4444;
+    /* === Section Headers === */
+    .section-header {
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: #66b2ff !important;
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
+        border-bottom: 1px solid #333;
+        padding-bottom: 0.3rem;
     }
     
-    .welcome-container {
-        background-color: #262730;
+    /* === Error Messages === */
+    .error-message {
+        background-color: #422a2a !important;
+        border-left: 4px solid #ff4444 !important;
+        padding: 1rem !important;
+        border-radius: 10px !important;
+        margin: 0.5rem 0 !important;
+    }
+    
+    /* === Welcome Message === */
+    .welcome-message {
         text-align: center;
         padding: 2rem;
-    }
-
-    /* === Bot Response Sections === */
-    .section-header {
-        font-size: 1.3rem;
-        font-weight: bold;
-        color: #66b2ff !important; /* Bright blue for headers */
-        margin-top: 1.5rem;
-        border-bottom: 2px solid #333;
-        padding-bottom: 0.5rem;
-    }
-
-    .session-info {
-        background-color: #1e3a4c;
-        padding: 0.5rem 1rem;
-        border-radius: 10px;
-        border-left: 4px solid #4caf50;
-        margin-bottom: 1rem;
-        font-size: 0.9rem;
-    }
-
-    /* === Fixed Input Bar at the Bottom === */
-    .input-fixed {
-        flex-shrink: 0; /* Prevents the input bar from shrinking */
-        background-color: #0F1116; /* Match main background */
-        padding: 1rem 2rem;
-        border-top: 1px solid #333;
+        background-color: #262730;
+        border-radius: 15px;
+        margin: 1rem 0;
     }
     
-    /* Make input text area visible */
-    .stTextArea, .stTextArea > div, .stTextArea > div > textarea {
-        background-color: #262730 !important;
-        color: #FAFAFA !important;
+    /* === Math Response Formatting === */
+    .math-section {
+        margin: 1rem 0;
+        padding: 1rem;
+        background-color: #1e1e1e;
+        border-radius: 8px;
+        border-left: 4px solid #4CAF50;
     }
-
-    /* File uploader styling */
-    .stFileUploader > div {
-        background-color: #262730 !important;
-        color: #FAFAFA !important;
+    
+    .math-section h4 {
+        color: #4CAF50 !important;
+        margin-bottom: 0.8rem;
     }
-
-    .stForm {
-        border: none !important;
-        padding: 0 !important;
+    
+    .math-steps {
+        line-height: 1.8;
     }
-
-    /* Image preview styling */
-    .uploaded-image {
-        border: 2px solid #333;
-        border-radius: 10px;
-        margin: 0.5rem 0;
+    
+    .math-formula {
+        background-color: #2d2d2d;
+        padding: 0.3rem 0.6rem;
+        border-radius: 4px;
+        font-family: 'Courier New', monospace;
+        margin: 0.2rem;
+        display: inline-block;
     }
-
 </style>
 """, unsafe_allow_html=True)
 
@@ -169,7 +129,47 @@ if "expert" not in st.session_state:
     st.session_state.expert = None
     st.session_state.current_session_id = None
     st.session_state.initialized = False
-    st.session_state.conversation_history = []
+
+if "messages" not in st.session_state:
+    st.session_state.messages = [
+        {"role": "assistant", "content": "👋 Welcome to the Mathematics Expert! I can help you solve complex math problems. You can type your question or upload an image of a math problem."}
+    ]
+
+# --- Sidebar ---
+with st.sidebar:
+    st.title("📷 Upload Image")
+    #note
+    st.markdown("- after uploading type solve and press enter to get the answer.")
+    st.markdown("- after getting the answer remove the uploaded image.")
+    
+    
+    # File uploader in sidebar - Fixed deprecated parameter
+    uploaded_file = st.file_uploader(
+        "", 
+        type=['png'], 
+        help="Upload a PNG image of your math problem"
+    )
+    
+    if uploaded_file is not None:
+        st.image(uploaded_file, caption="Uploaded Image", use_container_width=True)
+        
+    st.markdown("---")
+    
+    # New chat button
+    if st.button("🔄 New Chat", use_container_width=True):
+        st.session_state.current_session_id = None
+        st.session_state.messages = [
+            {"role": "assistant", "content": "👋 Welcome to the Mathematics Expert! I can help you solve complex math problems. You can type your question or upload an image of a math problem."}
+        ]
+        st.rerun()
+    
+    st.markdown("---")
+    st.markdown("### Features:")
+    st.markdown("• Step-by-step solutions")
+    st.markdown("• Concept explanations")
+    st.markdown("• Alternative methods")
+    st.markdown("• Common mistakes to avoid")
+    st.markdown("• Image problem solving")
 
 # --- Core Functions ---
 def initialize_expert():
@@ -213,7 +213,6 @@ def process_uploaded_image(uploaded_file) -> str:
 
         # Extract text from image
         extracted_text = get_text_from_image(tmp_file_path)
-        
         return extracted_text
         
     except Exception as e:
@@ -227,143 +226,150 @@ def process_uploaded_image(uploaded_file) -> str:
             except Exception as cleanup_error:
                 logger.warning(f"Failed to delete temporary file {tmp_file_path}: {cleanup_error}")
 
-def display_conversation():
-    """Displays the conversation history."""
-    if not st.session_state.conversation_history:
-        st.markdown(
-            '<div class="welcome-container">'
-            '<h3>👋 Welcome to the Mathematics Expert!</h3>'
-            '</div>', 
-            unsafe_allow_html=True
-        )
-        return
+def format_math_response(response) -> str:
+    """Format the structured response into a readable format with better spacing and organization."""
+    formatted_parts = []
+    
+    if response.problem_analysis:
+        formatted_parts.append(f"""
+### 🔍 Problem Analysis
+{response.problem_analysis}
+""")
+    
+    if response.step_by_step_solution:
+        # Clean up the step-by-step solution for better readability
+        solution = response.step_by_step_solution
+        # Add line breaks for better formatting
+        solution = solution.replace('. ', '.\n\n')
+        solution = solution.replace('=> ', '\n\n**➤** ')
+        solution = solution.replace('Set ', '\n**Step:** Set ')
+        
+        formatted_parts.append(f"""
+### 📝 Step-by-Step Solution
+{solution}
+""")
 
-    for entry in st.session_state.conversation_history:
-        # Check if this entry has an image
-        if entry.get("has_image"):
-            st.markdown(f'<div class="user-message"><strong>🧑‍🎓 You (Image):</strong><p>{entry["query"]}</p></div>', unsafe_allow_html=True)
+    if response.concept_explanation:
+        explanation = response.concept_explanation
+        # Format the explanation for better readability
+        explanation = explanation.replace(': ', ':\n\n')
+        explanation = explanation.replace(', ', ',\n')
+        
+        formatted_parts.append(f"""
+### 💡 Concept Explanation
+{explanation}
+""")
+
+    if response.alternative_methods and any(response.alternative_methods):
+        methods = []
+        for i, method in enumerate(response.alternative_methods, 1):
+            methods.append(f"**Method {i}:** {method}")
+        methods_text = "\n\n".join(methods)
+        formatted_parts.append(f"""
+### 🔄 Alternative Methods
+{methods_text}
+""")
+
+    if response.key_formulas_used and any(response.key_formulas_used):
+        formulas = []
+        for formula in response.key_formulas_used:
+            formulas.append(f"```\n{formula}\n```")
+        formulas_text = "\n".join(formulas)
+        formatted_parts.append(f"""
+### 📐 Key Formulas Used
+{formulas_text}
+""")
+    
+    if response.common_mistakes_to_avoid and any(response.common_mistakes_to_avoid):
+        mistakes = []
+        for i, mistake in enumerate(response.common_mistakes_to_avoid, 1):
+            mistakes.append(f"**{i}.** {mistake}")
+        mistakes_text = "\n\n".join(mistakes)
+        formatted_parts.append(f"""
+### ⚠️ Common Mistakes to Avoid
+{mistakes_text}
+""")
+        
+    if response.related_jee_topics and any(response.related_jee_topics):
+        topics = " • ".join(response.related_jee_topics)
+        formatted_parts.append(f"""
+### 🔗 Related Math Topics
+{topics}
+""")
+    
+    return "\n\n---\n\n".join(formatted_parts)
+
+# --- Main App ---
+st.title("Mathematics Expert")
+
+# Auto-initialize the expert
+if not st.session_state.initialized:
+    with st.spinner("Initializing math expert..."):
+        if initialize_expert():
+            logger.info("Expert auto-initialized successfully")
         else:
-            st.markdown(f'<div class="user-message"><strong>🧑‍🎓 You:</strong><p>{entry["query"]}</p></div>', unsafe_allow_html=True)
-        
-        result = entry.get("result")
-        if result and result.get("success"):
-            response = result.get("structured_response")
-            if response:
-                if response.problem_analysis:
-                    st.markdown('<div class="section-header">Problem Analysis</div>', unsafe_allow_html=True)
-                    st.markdown(response.problem_analysis)
-                
-                if response.step_by_step_solution:
-                    st.markdown('<div class="section-header">Step-by-Step Solution</div>', unsafe_allow_html=True)
-                    st.markdown(response.step_by_step_solution)
+            st.error("Failed to initialize the math expert. Please refresh the page.")
 
-                # Display concept explanation
-                if response.concept_explanation:
-                    st.markdown('<div class="section-header">Concept Explanation</div>', unsafe_allow_html=True)
-                    st.markdown(response.concept_explanation)
+# Display chat messages
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
 
-                # Display alternative methods
-                if response.alternative_methods and any(response.alternative_methods):
-                    st.markdown('<div class="section-header">Alternative Methods</div>', unsafe_allow_html=True)
-                    for method in response.alternative_methods:
-                        st.markdown(f"- {method}")
-
-                # Display key formulas
-                if response.key_formulas_used and any(response.key_formulas_used):
-                    st.markdown('<div class="section-header">Key Formulas Used</div>', unsafe_allow_html=True)
-                    for formula in response.key_formulas_used:
-                        st.markdown(f"- `{formula}`")
-                
-                # Display common mistakes
-                if response.common_mistakes_to_avoid and any(response.common_mistakes_to_avoid):
-                    st.markdown('<div class="section-header">Common Mistakes to Avoid</div>', unsafe_allow_html=True)
-                    for mistake in response.common_mistakes_to_avoid:
-                        st.markdown(f"- {mistake}")
-                    
-                # Display related topics
-                if response.related_jee_topics and any(response.related_jee_topics):
-                    st.markdown('<div class="section-header">Related Math Topics</div>', unsafe_allow_html=True)
-                    st.markdown(", ".join(response.related_jee_topics))
-                
-                st.markdown('</div>', unsafe_allow_html=True)
-            else:
-                st.markdown('<div class="bot-response"><p>I received an empty response. Could you please try rephrasing?</p></div>', unsafe_allow_html=True)
-
-        elif result:
-            st.markdown(f'<div class="error-container"><strong>🤖 Expert:</strong><p>{result.get("error", "Unknown error")}</p></div>', unsafe_allow_html=True)
-
-def main():
-    """Defines the main Streamlit application layout."""
-    
-    # Auto-initialize the expert
+# Chat input
+if prompt := st.chat_input("Type your math question here..."):
     if not st.session_state.initialized:
-        with st.spinner("Initializing math expert..."):
-            if initialize_expert():
-                logger.info("Expert auto-initialized successfully")
-            else:
-                st.error("Failed to initialize the math expert. Please refresh the page.")
+        st.error("Math expert is not initialized. Please refresh the page.")
+        st.stop()
     
-    # --- Main Content Area (Messages + Input) ---
+    # Determine the final query
+    final_query = ""
+    has_image = False
     
-    # Add a reset button at the top
-    col1, col2 = st.columns([7, 1])
-    with col2:
-        if st.button("🔄 New Chat"):
-            st.session_state.current_session_id = None
-            st.session_state.conversation_history = []
-            st.rerun()
+    # Process image if uploaded
+    if uploaded_file is not None:
+        with st.spinner("📷 Extracting question from image..."):
+            extracted_text = process_uploaded_image(uploaded_file)
+            final_query = extracted_text
+            has_image = True
+            # Clear the uploaded file after processing
+            st.session_state.pop('uploaded_file', None)
     
-    # Scrollable container for messages
-    st.markdown('<div class="messages-container">', unsafe_allow_html=True)
-    display_conversation()
-    st.markdown('</div>', unsafe_allow_html=True)
-
-    # Fixed input form at the bottom
-    st.markdown('<div class="input-fixed">', unsafe_allow_html=True)
-    
-    with st.form(key="query_form", clear_on_submit=True):
-        # Image upload option
-        uploaded_file = st.file_uploader("Upload math problem image (PNG only):", type=['png'], key="image_uploader")
-        
-        # Show uploaded image preview
-        if uploaded_file is not None:
-            st.image(uploaded_file, caption="Uploaded Image", use_column_width=True, clamp=True)
-        
-        # Text input
-        query = st.text_area("Type your question here (or upload image above):", key="query_input", label_visibility="collapsed", placeholder="e.g., Solve ∫ x * sin(x) dx")
-        submitted = st.form_submit_button("Solve")
-
-    if submitted:
-        final_query = ""
-        has_image = False
-        
-        # Process image if uploaded
-        if uploaded_file is not None:
-            with st.spinner("📷 Extracting question from image..."):
-                extracted_text = process_uploaded_image(uploaded_file)
-                final_query = extracted_text
-                has_image = True
-        
-        # Use text query if no image or if both provided
-        if query.strip():
-            if final_query:
-                final_query = f"Image question: {final_query}\n\nAdditional context: {query.strip()}"
-            else:
-                final_query = query.strip()
-        
+    # Use text query if no image or combine both
+    if prompt.strip():
         if final_query:
+            final_query = f"Image question: {final_query}\n\nAdditional context: {prompt.strip()}"
+        else:
+            final_query = prompt.strip()
+    
+    if final_query:
+        # Add user message to chat
+        user_content = f"{'📷 ' if has_image else ''}{prompt}"
+        st.session_state.messages.append({"role": "user", "content": user_content})
+        with st.chat_message("user"):
+            st.markdown(user_content)
+        
+        # Get AI response
+        with st.chat_message("assistant"):
             with st.spinner("🧠 Thinking..."):
                 result = run_async_query(final_query)
-                st.session_state.conversation_history.append({
-                    "query": final_query, 
-                    "result": result,
-                    "has_image": has_image
-                })
-            st.rerun()
-        else:
-            st.warning("Please provide a question or upload an image.")
-    
-    st.markdown('</div>', unsafe_allow_html=True)
+                
+                if result and result.get("success"):
+                    response = result.get("structured_response")
+                    if response:
+                        formatted_response = format_math_response(response)
+                        st.markdown(formatted_response)
+                        st.session_state.messages.append({"role": "assistant", "content": formatted_response})
+                    else:
+                        error_msg = "I received an empty response. Could you please try rephrasing your question?"
+                        st.markdown(error_msg)
+                        st.session_state.messages.append({"role": "assistant", "content": error_msg})
+                else:
+                    error_msg = f"❌ **Error:** {result.get('error', 'Unknown error occurred')}"
+                    st.markdown(error_msg)
+                    st.session_state.messages.append({"role": "assistant", "content": error_msg})
+    else:
+        st.warning("Please provide a question or upload an image.")
 
-if __name__ == "__main__":
-    main()
+# Clear uploaded file after each interaction
+if uploaded_file and 'uploaded_file' in st.session_state:
+    st.session_state.pop('uploaded_file', None)

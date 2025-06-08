@@ -75,7 +75,6 @@ math-ai/
    LANGFUSE_PUBLIC_KEY=your_langfuse_public_key_here
    LANGFUSE_HOST="https://cloud.langfuse.com"
    TAVILY_API_KEY=your_tavily_key_here
-   SMITHERY_API_KEY=your_smithery_key_here
    ```
 
 4. **Seed the database (optional):**

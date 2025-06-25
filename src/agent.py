@@ -35,8 +35,8 @@ class MathExpertWithMemory:
     
     def __init__(self):
         self.agent = None
-        self.sessions = {}  # Local session cache
-        self.memory_enabled = False  # Disabled for now
+        self.sessions = {}  
+        self.memory_enabled = False  
         
     def create_agent(self):
         
@@ -190,42 +190,42 @@ class MathExpertWithMemory:
             # Format response
             formatted_response = f"""
 
-Memory Status: disabled (using session context)
-Query #{self.sessions[current_session_id]['total_queries']}
+                Memory Status: disabled (using session context)
+                Query #{self.sessions[current_session_id]['total_queries']}
 
-PROBLEM ANALYSIS:
-{response.problem_analysis}
+                PROBLEM ANALYSIS:
+                {response.problem_analysis}
 
-CONCEPT EXPLANATION:
-{response.concept_explanation}
+                CONCEPT EXPLANATION:
+                {response.concept_explanation}
 
-STEP-BY-STEP SOLUTION:
-{response.step_by_step_solution}
+                STEP-BY-STEP SOLUTION:
+                {response.step_by_step_solution}
 
-ALTERNATIVE METHODS:
-{chr(10).join(f"Method {i+1}: {method}" for i, method in enumerate(response.alternative_methods)) if response.alternative_methods else "Standard method provided above"}
+                ALTERNATIVE METHODS:
+                {chr(10).join(f"Method {i+1}: {method}" for i, method in enumerate(response.alternative_methods)) if response.alternative_methods else "Standard method provided above"}
 
-KEY FORMULAS USED:
-{chr(10).join(f"• {formula}" for formula in response.key_formulas_used) if response.key_formulas_used else "• Basic math formulas"}
+                KEY FORMULAS USED:
+                {chr(10).join(f"• {formula}" for formula in response.key_formulas_used) if response.key_formulas_used else "• Basic math formulas"}
 
-COMMON MISTAKES TO AVOID:
-{chr(10).join(f"• {mistake}" for mistake in response.common_mistakes_to_avoid) if response.common_mistakes_to_avoid else "• Calculation errors and sign mistakes"}
+                COMMON MISTAKES TO AVOID:
+                {chr(10).join(f"• {mistake}" for mistake in response.common_mistakes_to_avoid) if response.common_mistakes_to_avoid else "• Calculation errors and sign mistakes"}
 
-RELATED TOPICS:
-{', '.join(response.related_jee_topics) if response.related_jee_topics else "Math fundamentals"}
+                RELATED TOPICS:
+                {', '.join(response.related_jee_topics) if response.related_jee_topics else "Math fundamentals"}
 
-DIFFICULTY LEVEL: {response.difficulty_level}
-ESTIMATED TIME TO SOLVE: {response.time_to_solve_minutes} minutes
+                DIFFICULTY LEVEL: {response.difficulty_level}
+                ESTIMATED TIME TO SOLVE: {response.time_to_solve_minutes} minutes
 
-PRACTICE RECOMMENDATIONS:
-{response.practice_recommendations}
+                PRACTICE RECOMMENDATIONS:
+                {response.practice_recommendations}
 
-MEMORY INSIGHTS:
-{response.memory_insights}
+                MEMORY INSIGHTS:
+                {response.memory_insights}
 
-PERSONALIZED TIPS:
-{response.personalized_tips}
-{'='*70}
+                PERSONALIZED TIPS:
+                {response.personalized_tips}
+                {'='*70}
             """
             
             # Add to conversation history for future context

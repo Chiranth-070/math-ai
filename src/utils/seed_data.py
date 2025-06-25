@@ -88,7 +88,7 @@ def embed_and_upload(data_batch: List[dict]):
         )
 
     except Exception as e:
-        print(f"❌ Batch failed: {e}")
+        print(f"Batch failed: {e}")
 
 def main():
    

@@ -89,5 +89,5 @@ async def rag_search(query: str, num_chunks: int = 4) -> List[RAGSearchResult]:
         return results
 
     except Exception as e:
-        logger.error(f" RAG search failed: {e}")
+        logger.error(f"RAG search failed: {e}")
         return []
